@@ -3,7 +3,10 @@
 ## Información académica
 
 Instituto de Formación Técnica Superior N° 29
-Tecnicatura Superior en Desarrollo de Software - Daniel Cordoba - 3°A - Año 2026
+
+Tecnicatura Superior en Desarrollo de Software
+
+Daniel Cordoba - 3°A - Año 2026
 
 ---
 
@@ -15,7 +18,6 @@ La solución separa la aplicación en tres componentes:
 * Cliente
 * Servidor Central
 * Workers
-
 
 ---
 
@@ -42,8 +44,6 @@ La solución separa la aplicación en tres componentes:
             │ SQLite DB  │
             └────────────┘
 ```
-
----
 
 # Arquitectura Distribuida
 
@@ -75,8 +75,6 @@ Worker1 Worker2 WorkerN
  PostgreSQL / S3
 ```
 
----
-
 # Tecnologías
 
 * Python 3
@@ -86,7 +84,6 @@ Worker1 Worker2 WorkerN
 * Threading
 * ThreadPoolExecutor
 * Werkzeug Security
-
 ---
 
 # Funcionalidades
@@ -171,7 +168,18 @@ python cliente.py
 7. El servidor responde al cliente.
 
 ---
+# Arquitectura Distribuida
 
+## Terminal Cliente
+<img width="940" height="235" alt="image" src="https://github.com/user-attachments/assets/768d100a-f6d3-42fb-b58f-f421b009a9c1" />
+
+## Terminal Servidor
+<img width="940" height="154" alt="image" src="https://github.com/user-attachments/assets/870d6ae7-5dba-4e36-be00-5eda2fc58384" />
+
+## Terminal Workers
+<img width="940" height="161" alt="image" src="https://github.com/user-attachments/assets/a24bab84-5643-4655-a70a-acbcf7272d8d" />
+
+---
 # Conclusión
 
 El proyecto implementa exitosamente una arquitectura distribuida Cliente-Servidor-Worker mediante sockets TCP, incorporando concurrencia y separación de responsabilidades respecto de la solución monolítica desarrollada previamente.
