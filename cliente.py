@@ -15,13 +15,16 @@ def enviar_peticion(action, data=None):
         **data
     }
 
-    with socket.socket(
+    try:
+
+        with socket.socket(
             socket.AF_INET,
-            socket.SOCK_STREAM) as cliente:
+            socket.SOCK_STREAM
+        ) as cliente:
 
-        try:
-
-            cliente.connect((HOST, PORT))
+            cliente.connect(
+                (HOST, PORT)
+            )
 
             cliente.sendall(
                 json.dumps(payload).encode()
@@ -33,34 +36,63 @@ def enviar_peticion(action, data=None):
                 respuesta.decode()
             )
 
-        except ConnectionRefusedError:
+    except ConnectionRefusedError:
 
-            return {
-                "status": 500,
-                "Error": "Servidor no disponible"
-            }
+        return {
+            "status": 500,
+            "error": "Servidor no disponible"
+        }
+
+    except Exception as e:
+
+        return {
+            "status": 500,
+            "error": str(e)
+        }
 
 
 def registrar():
 
-    usuario = input("Usuario: ")
-    password = input("Contraseña: ")
+    print("\n=== REGISTRO ===")
+
+    usuario = input(
+        "Usuario: "
+    ).strip()
+
+    password = input(
+        "Contraseña: "
+    ).strip()
+
+    respuesta = enviar_peticion(
+        "registro",
+        {
+            "usuario": usuario,
+            "contraseña": password
+        }
+    )
+
+    print("\nRespuesta:")
 
     print(
-        enviar_peticion(
-            "registro",
-            {
-                "usuario": usuario,
-                "contraseña": password
-            }
+        json.dumps(
+            respuesta,
+            indent=4,
+            ensure_ascii=False
         )
     )
 
 
 def login():
 
-    usuario = input("Usuario: ")
-    password = input("Contraseña: ")
+    print("\n=== LOGIN ===")
+
+    usuario = input(
+        "Usuario: "
+    ).strip()
+
+    password = input(
+        "Contraseña: "
+    ).strip()
 
     respuesta = enviar_peticion(
         "login",
@@ -70,35 +102,140 @@ def login():
         }
     )
 
-    print(respuesta)
+    print("\nRespuesta:")
 
-    if respuesta["status"] == 200:
+    print(
+        json.dumps(
+            respuesta,
+            indent=4,
+            ensure_ascii=False
+        )
+    )
+
+    if respuesta.get("status") == 200:
 
         print(
-            enviar_peticion("tareas")
+            "\nLogin exitoso."
+        )
+
+        menu_tareas()
+
+    else:
+
+        print(
+            "\nNo fue posible iniciar sesión."
         )
 
 
-def menu():
+def consultar_estadisticas():
+
+    respuesta = enviar_peticion(
+        "tareas"
+    )
+
+    print(
+        "\n=== INFORMACIÓN DEL SISTEMA ==="
+    )
+
+    print(
+        json.dumps(
+            respuesta,
+            indent=4,
+            ensure_ascii=False
+        )
+    )
+
+
+def menu_tareas():
 
     while True:
 
-        print("\n=== SISTEMA DISTRIBUIDO ===")
-        print("1. Registrarse")
-        print("2. Login")
-        print("3. Salir")
+        print(
+            "\n=== MENÚ DE TAREAS ==="
+        )
 
-        opcion = input("Opción: ")
+        print(
+            "1. Consultar estadísticas"
+        )
+
+        print(
+            "2. Volver"
+        )
+
+        opcion = input(
+            "Seleccione una opción: "
+        )
 
         if opcion == "1":
+
+            consultar_estadisticas()
+
+        elif opcion == "2":
+
+            break
+
+        else:
+
+            print(
+                "\nOpción inválida."
+            )
+
+
+def mostrar_menu():
+
+    while True:
+
+        print(
+            "\n=============================="
+        )
+
+        print(
+            " SISTEMA DISTRIBUIDO PFO 3 "
+        )
+
+        print(
+            "=============================="
+        )
+
+        print(
+            "1. Registrarse"
+        )
+
+        print(
+            "2. Login"
+        )
+
+        print(
+            "3. Salir"
+        )
+
+        opcion = input(
+            "Seleccione una opción: "
+        )
+
+        if opcion == "1":
+
             registrar()
 
         elif opcion == "2":
+
             login()
 
         elif opcion == "3":
+
+            print(
+                "\nHasta luego."
+            )
+
             break
+
+        else:
+
+            print(
+                "\nOpción inválida."
+            )
 
 
 if __name__ == "__main__":
-    menu()
+
+    mostrar_menu()
