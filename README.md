@@ -29,43 +29,6 @@ El objetivo es desacoplar la recepción de solicitudes de su procesamiento, perm
 
 ## Diagrama del Sistema
 
-```text
-                           CLIENTE
-                              │
-                              │
-                              ▼
-
-              ┌──────────────────────────┐
-              │     SERVIDOR TCP         │
-              │       Puerto 5000        │
-              │                          │
-              │      Round Robin         │
-              └────────────┬─────────────┘
-                           │
-          ┌────────────────┼────────────────┐
-          │                │                │
-          ▼                ▼                ▼
-
-   ┌─────────────┐ ┌─────────────┐ ┌─────────────┐
-   │  WORKER 1   │ │  WORKER 2   │ │  WORKER 3   │
-   │ Puerto 5001 │ │ Puerto 5002 │ │ Puerto 5003 │
-   │ Pool x 5    │ │ Pool x 5    │ │ Pool x 5    │
-   └──────┬──────┘ └──────┬──────┘ └──────┬──────┘
-          │               │               │
-          └───────────────┼───────────────┘
-                          │
-                          ▼
-
-                ┌──────────────────┐
-                │    SQLite DB     │
-                │   usuarios.db    │
-                └──────────────────┘
-```
-
----
-
-# Arquitectura Objetivo Solicitada por la Consigna
-
 Arquitectura distribuida completa con balanceador de carga, cola de mensajes y almacenamiento distribuido.
 
 ```text
