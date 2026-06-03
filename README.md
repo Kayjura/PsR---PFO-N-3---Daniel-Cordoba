@@ -29,67 +29,56 @@ El objetivo es desacoplar la recepción de solicitudes de su procesamiento, perm
 
 ## Diagrama del Sistema
 
+Arquitectura distribuida completa con balanceador de carga, cola de mensajes y almacenamiento distribuido.
+
 ```text
-                           CLIENTE
-                              │
-                              │
-                              ▼
 
-              ┌──────────────────────────┐
-              │     SERVIDOR TCP         │
-              │       Puerto 5000        │
-              │                          │
-              │      Round Robin         │
-              └────────────┬─────────────┘
+╭──────────────────────────────────────────────────────────╮
+│      PFO 3 - REDISEÑO COMO SISTEMA DISTRIBUIDO           │
+╰──────────────────────────────────────────────────────────╯
+
+                      👤 CLIENTE
                            │
-          ┌────────────────┼────────────────┐
-          │                │                │
-          ▼                ▼                ▼
-
-   ┌─────────────┐ ┌─────────────┐ ┌─────────────┐
-   │  WORKER 1   │ │  WORKER 2   │ │  WORKER 3   │
-   │ Puerto 5001 │ │ Puerto 5002 │ │ Puerto 5003 │
-   │ Pool x 5    │ │ Pool x 5    │ │ Pool x 5    │
-   └──────┬──────┘ └──────┬──────┘ └──────┬──────┘
-          │               │               │
-          └───────────────┼───────────────┘
+                           │ TCP
+                           ▼
+╭──────────────────────────────────────────────────────────╮
+│                  SERVIDOR CENTRAL                        │
+│                      Puerto 5000                         │
+│                                                          │
+│  • Recibe solicitudes de clientes                        │
+│  • Gestiona conexiones concurrentes                      │
+│  • Distribuye tareas mediante Round Robin                │
+╰─────────────────────────┬────────────────────────────────╯
                           │
                           ▼
 
-                ┌──────────────────┐
-                │    SQLite DB     │
-                │   usuarios.db    │
-                └──────────────────┘
+              BALANCEO DE CARGA (ROUND ROBIN)
+
+            ┌──────────────┬──────────────┬
+            │              │              │              
+            ▼              ▼              ▼
+╭────────────────╮╭────────────────╮╭────────────────╮
+│    WORKER 1    ││    WORKER 2    ││    WORKER 3    │
+│                ││                ││                │
+│ Puerto 5001    ││ Puerto 5002    ││ Puerto 5003    │
+│                ││                ││                │
+│ Pool 5 Threads ││ Pool 5 Threads ││ Pool 5 Threads │
+╰───────┬────────╯╰───────┬────────╯╰───────┬────────╯
+        │                 │                 │
+        └─────────────────┼─────────────────┘
+                          │
+                          ▼
+╭──────────────────────────────────────────────────────────╮
+│                    BASE DE DATOS                         │
+│                       SQLite                             │
+│                                                          │
+│  • Usuarios                                              │
+│  • Contraseñas cifradas (hash)                           │
+│  • Estadísticas                                          │
+╰──────────────────────────────────────────────────────────╯
+
+
 ```
-
----
-
-# Arquitectura Objetivo Solicitada por la Consigna
-
-La consigna solicita una arquitectura distribuida completa que incluya balanceador de carga, cola de mensajes y almacenamiento distribuido.
-
-```text
-Clientes
-    │
-    ▼
-Balanceador de Carga
-(Nginx / HAProxy)
-    │
-    ▼
-Servidor Central
-    │
-    ▼
-RabbitMQ
-    │
- ┌──┼──┐
- ▼  ▼  ▼
-W1 W2 WN
-    │
-    ▼
-PostgreSQL / S3
-```
-
-La implementación desarrollada representa una versión simplificada y funcional de dicho modelo, manteniendo el concepto de distribución de tareas entre múltiples workers.
 
 ---
 
@@ -343,14 +332,16 @@ Este rediseño permite desacoplar responsabilidades, mejorar la escalabilidad y 
 # Capturas
 
 ## Terminal Cliente
-<img width="940" height="235" alt="image" src="https://github.com/user-attachments/assets/768d100a-f6d3-42fb-b58f-f421b009a9c1" />
+<img width="940" height="351" alt="image" src="https://github.com/user-attachments/assets/77d5c1f2-2503-42b9-8450-6c094c304d4d" />
 
 ## Terminal Servidor
-<img width="940" height="154" alt="image" src="https://github.com/user-attachments/assets/870d6ae7-5dba-4e36-be00-5eda2fc58384" />
+<img width="940" height="234" alt="image" src="https://github.com/user-attachments/assets/67163f04-70d4-4441-8e9c-4ff53ba2b6b0" />
 
 ## Terminal Worker 1
-<img width="940" height="161" alt="image" src="https://github.com/user-attachments/assets/a24bab84-5643-4655-a70a-acbcf7272d8d" />
+<img width="940" height="234" alt="image" src="https://github.com/user-attachments/assets/fc9b24da-3f36-4ab3-a757-256bc9aac2fa" />
 
 ## Terminal Worker 2
+<img width="940" height="207" alt="image" src="https://github.com/user-attachments/assets/19168164-844e-49e3-8d45-1f64738e9b3f" />
 
 ## Terminal Worker 3
+<img width="940" height="199" alt="image" src="https://github.com/user-attachments/assets/593cdc8b-4788-493d-87a5-6ae672565b76" />
